@@ -1,0 +1,6 @@
+@PortalDoAlunoAPI_HostAddress = http://localhost:5179
+
+GET {{PortalDoAlunoAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
