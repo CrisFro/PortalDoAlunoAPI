@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using Dapper;
 using PortalDoAluno.Domain.Interfaces;
 
-namespace PortalDoAluno.Infrastructure.Respositories
+namespace PortalDoAluno.Infrastructure.Repositories
 {
     public class AlunoRepository : IAlunoRepository
     {
@@ -18,7 +18,7 @@ namespace PortalDoAluno.Infrastructure.Respositories
         public async Task<IEnumerable<Aluno>> GetAllAlunosAsync()
         {
             using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<Aluno>("SELECT * FROM aluno");
+            return await connection.QueryAsync<Aluno>("SELECT * FROM aluno WHERE IsActive = 1");
         }
 
         public async Task<Aluno> GetAlunoByIdAsync(int id)
@@ -48,7 +48,7 @@ namespace PortalDoAluno.Infrastructure.Respositories
         public async Task DeleteAlunoAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            var sql = "DELETE FROM aluno WHERE Id = @Id";
+            var sql = "UPDATE aluno SET IsActive = 0 WHERE Id = @Id";
             await connection.ExecuteAsync(sql, new { Id = id });
         }
     }
