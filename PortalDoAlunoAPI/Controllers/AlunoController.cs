@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PortalDoAluno.Application.DTOs;
 using PortalDoAluno.Application.Services;
 using PortalDoAluno.Domain.Entities;
 
@@ -16,7 +17,7 @@ namespace PortalDoAlunoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Aluno>>> GetAllAlunos()
+        public async Task<ActionResult<IEnumerable<CreateAlunoDto>>> GetAllAlunos()
         {
             var alunos = await _alunoService.GetAllAlunosAsync();
             return Ok(alunos);
@@ -29,16 +30,24 @@ namespace PortalDoAlunoAPI.Controllers
             if (aluno == null)
                 return NotFound();
 
-            return Ok(aluno);
+            return Ok(aluno); 
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAluno([FromBody] Aluno aluno)
+        public async Task<IActionResult> CreateAluno([FromBody] CreateAlunoDto createAlunoDto)
         {
-            if (aluno == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Dados do aluno estão nulos.");
+                return BadRequest(ModelState);
             }
+
+            var aluno = new Aluno
+            {
+                Nome = createAlunoDto.Nome,
+                Usuario = createAlunoDto.Usuario,
+                Senha = createAlunoDto.Senha,
+                IsActive = true
+            };
 
             var alunoCriado = await _alunoService.CreateAsync(aluno);
             return CreatedAtAction(nameof(GetAlunoById), new { id = alunoCriado.Id }, alunoCriado);

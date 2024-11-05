@@ -1,6 +1,6 @@
 using PortalDoAluno.Application.Services;
 using PortalDoAluno.Domain.Interfaces;
-using PortalDoAluno.Infrastructure.Respositories;
+using PortalDoAluno.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +14,9 @@ builder.Services.AddSwaggerGen();
 // Registrar repositórios e serviços para injeção de dependência
 builder.Services.AddScoped<IAlunoRepository, AlunoRepository>();
 builder.Services.AddScoped<IAlunoService, AlunoService>();
+
+builder.Services.AddScoped<ITurmaRepository, TurmaRepository>();
+builder.Services.AddScoped<ITurmaService, TurmaService>();
 
 var app = builder.Build();
 

@@ -14,12 +14,24 @@ namespace PortalDoAluno.Application.Services
 
         public async Task<IEnumerable<Aluno>> GetAllAlunosAsync()
         {
-            return await _alunoRepository.GetAllAlunosAsync();
+            var alunos = await _alunoRepository.GetAllAlunosAsync();
+
+            return alunos.Select(aluno =>
+            {
+                aluno.Senha = string.Empty;
+                return aluno;
+            });
         }
 
         public async Task<Aluno> GetAlunoByIdAsync(int id)
         {
-            return await _alunoRepository.GetAlunoByIdAsync(id);
+            var aluno = await _alunoRepository.GetAlunoByIdAsync(id);
+            if (aluno == null)
+            {
+                throw new InvalidOperationException("Aluno não encontrado");
+            }
+            aluno.Senha = string.Empty; 
+            return aluno;
         }
 
         public async Task<Aluno> CreateAsync(Aluno aluno)
