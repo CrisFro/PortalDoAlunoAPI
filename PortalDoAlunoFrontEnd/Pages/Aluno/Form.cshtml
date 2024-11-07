@@ -4,20 +4,13 @@
     ViewData["Title"] = Model.Aluno.Id == null ? "Criar Aluno" : "Editar Aluno";
 }
 
-@if (ViewBag.MensagemSucesso != null)
-{
-    <div class="alert alert-success">
-        @ViewBag.MensagemSucesso
-    </div>
-}
-
-<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+<h2 class="mb-4 text-center text-primary">@ViewData["Title"]</h2>
 
 <div class="container d-flex justify-content-center">
     <form method="post" asp-page-handler="Submit" class="w-50 p-4 rounded shadow-sm" style="background-color: #f9f9f9;">
         <input type="hidden" asp-for="Aluno.Id" />
         <div class="form-group">
-            <label class="font-weight-bold">Nome:</label>
+            <label class="font-weight-bold">Nome do Aluno:</label>
             <input asp-for="Aluno.Nome" class="form-control form-control-sm rounded" id="nomeInput" required />
             <span asp-validation-for="Aluno.Nome" class="text-danger"></span>
         </div>

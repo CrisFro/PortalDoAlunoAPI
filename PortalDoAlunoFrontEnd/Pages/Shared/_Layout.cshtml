@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Portal Acadêmico</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" integrity="sha384-pzjw8f+ua7Kw1TIqQUdFqhv8KFYzv+OGa2OFrS6Uj+9EJWAdP42tbVtMjOh2I5hv" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" />
@@ -30,11 +31,7 @@
             </div>
         </nav>
 
-        <div class="container mt-5 flex-fill">
-            <div class="hero text-center p-5 mb-4 bg-light rounded shadow-sm">
-                <h1 class="display-4">Bem-vindo ao Portal Acadêmico!</h1>
-                <p class="lead">Gerencie suas turmas e alunos de forma fácil e rápida.</p>
-            </div>
+        <div class="container mt-5 flex-fill">         
             @RenderBody()
         </div>
 

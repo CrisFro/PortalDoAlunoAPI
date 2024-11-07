@@ -115,12 +115,26 @@ namespace PortalDoAluno.Tests
         [Fact]
         public async Task DeleteTurmaAsync_ShouldInvokeRepositoryMethod()
         {
-            // Teste para verificar se o método de exclusão é chamado
-            var turmaId = 1;
+            int turmaId = 2; 
+            var existingTurma = new Turma
+            {
+                Id = turmaId,
+                CursoId = 2,
+                Nome = "Engenharia de Software",
+                Ano = 2023,
+                IsActive = true
+            };
+
+            _turmaRepositoryMock.Setup(repo => repo.GetTurmaByIdAsync(turmaId))
+                .ReturnsAsync(existingTurma);
+
+            _turmaRepositoryMock.Setup(repo => repo.UpdateTurmaAsync(It.IsAny<Turma>()))
+                .Returns(Task.CompletedTask);
 
             await _turmaService.DeleteTurmaAsync(turmaId);
 
-            _turmaRepositoryMock.Verify(repo => repo.DeleteTurmaAsync(turmaId), Times.Once);
+            _turmaRepositoryMock.Verify(repo => repo.GetTurmaByIdAsync(turmaId), Times.Once);
+            _turmaRepositoryMock.Verify(repo => repo.UpdateTurmaAsync(It.Is<Turma>(t => t.IsActive == false)), Times.Once);
         }
     }
 }

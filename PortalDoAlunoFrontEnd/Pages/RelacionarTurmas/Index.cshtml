@@ -1,0 +1,96 @@
+﻿@page
+@model PortalDoAlunoFrontend.Pages.RelacionarTurmas.IndexModel
+@{
+    ViewData["Title"] = "Relacionar Turmas";
+}
+
+<h2 class="text-primary">Relacionar Aluno à Turma</h2>
+
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+
+<form method="post" asp-page-handler="Associar" class="mb-4">
+    <div class="form-group">
+        <div class="input-group">
+            <select id="alunoSelect" name="alunoId" class="form-control mr-2" required>
+                <option value="">Selecione um Aluno</option>
+                @foreach (var aluno in Model.Alunos)
+                {
+                    <option value="@aluno.Id">@aluno.Nome</option>
+                }
+            </select>
+            <select id="turmaSelect" name="turmaId" class="form-control mr-2" required>
+                <option value="">Selecione uma Turma</option>
+                @foreach (var turma in Model.Turmas)
+                {
+                    <option value="@turma.Id">@turma.Nome</option>
+                }
+            </select>
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary" id="associarBtn">+ Relacionar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+<h3 class="text-primary">Turmas com Alunos Relacionados</h3>
+@if (Model.TurmasComAlunos != null && Model.TurmasComAlunos.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-bordered mt-4">
+            <thead class="thead-light">
+                <tr>
+                    <th>Turma</th>
+                    <th>Alunos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var turmaComAlunos in Model.TurmasComAlunos)
+                {
+                    if (turmaComAlunos.Alunos != null && turmaComAlunos.Alunos.Any())
+                    {
+                        <tr>
+                            <td>@turmaComAlunos.TurmaNome</td>
+                            <td>
+                                @foreach (var aluno in turmaComAlunos.Alunos)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>@aluno.Nome (@aluno.Usuario)</span>
+                                        <form method="post" asp-page-handler="Inativar" class="d-inline">
+                                            <input type="hidden" name="alunoId" value="@aluno.Id" />
+                                            <input type="hidden" name="turmaId" value="@turmaComAlunos.TurmaId" />
+                                            <a asp-page="Edit" asp-route-alunoId="@aluno.Id" asp-route-turmaId="@turmaComAlunos.TurmaId" class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Desativar"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>Não há turmas com alunos relacionados.</p>
+}
+
+<script>
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.getElementById('associarBtn').disabled = true;
+    });
+</script>

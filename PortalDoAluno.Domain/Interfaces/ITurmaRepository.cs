@@ -10,5 +10,6 @@ namespace PortalDoAluno.Domain.Interfaces
         Task UpdateTurmaAsync(Turma turma);
         Task DeleteTurmaAsync(int id);
         Task<Turma> GetTurmaByNomeAsync(string nome);
+        Task<Turma> GetTurmaByNomeECursoAsync(string nome, int cursoId);
     }
 }

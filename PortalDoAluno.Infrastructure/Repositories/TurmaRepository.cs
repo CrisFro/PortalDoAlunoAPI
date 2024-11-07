@@ -65,5 +65,12 @@ namespace PortalDoAluno.Infrastructure.Repositories
             var sql = "SELECT id, curso_id AS CursoId, turma AS Nome, ano, isActive FROM turma WHERE turma = @Nome AND isActive = 1";
             return await connection.QueryFirstOrDefaultAsync<Turma>(sql, new { Nome = nome });
         }
+
+        public async Task<Turma> GetTurmaByNomeECursoAsync(string nome, int cursoId)
+        {
+            using var connection = GetConnection(); 
+            var sql = "SELECT id, curso_id AS CursoId, turma AS Nome, ano, isActive FROM turma WHERE turma = @Nome AND curso_id = @CursoId";
+            return await connection.QueryFirstOrDefaultAsync<Turma>(sql, new { Nome = nome, CursoId = cursoId });
+        }
     }
 }

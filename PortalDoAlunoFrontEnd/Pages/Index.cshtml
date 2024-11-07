@@ -1,10 +1,13 @@
 ﻿@page
-@model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Página Inicial";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (ViewContext.RouteData.Values["page"].ToString() == "/Index")
+
+{
+    <div class="hero text-center p-5 mb-4 bg-light rounded shadow-sm">
+        <h1 class="display-4">Bem-vindo ao Portal Acadêmico!</h1>
+        <p class="lead">Gerencie suas turmas e alunos de forma fácil e rápida.</p>
+    </div>
+}

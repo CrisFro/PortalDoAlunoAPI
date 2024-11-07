@@ -1,0 +1,48 @@
+﻿@page "{alunoId:int}/{turmaId:int}"
+@model PortalDoAlunoFrontend.Pages.RelacionarTurmas.EditModel
+@{
+    ViewData["Title"] = "Editar Relacionamento";
+}
+
+<h2 class="mb-4 text-center text-primary">Edição de Associação de Aluno à Turma</h2>
+
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}
+
+@if (TempData["MensagemSucesso"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensagemSucesso"]
+    </div>
+}
+
+<div class="container d-flex justify-content-center">
+    <form method="post" asp-page-handler="Update" class="w-50 p-4 rounded shadow-sm" style="background-color: #f9f9f9;">
+        <div class="form-group">
+            <label class="font-weight-bold">Aluno:</label>
+            @Html.DropDownListFor(model => model.AlunoId,
+                     new SelectList(Model.Alunos, "Id", "Nome", Model.AlunoId),
+                     "Selecione um Aluno",
+                     new { @class = "form-control", required = "required" })
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Turma:</label>
+            @Html.DropDownListFor(model => model.TurmaId,
+                     new SelectList(Model.Turmas, "Id", "Nome", Model.TurmaId),
+                     "Selecione uma Turma",
+                     new { @class = "form-control", required = "required" })
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary" id="associarBtn">Salvar</button>
+        </div>
+    </form>
+</div>
