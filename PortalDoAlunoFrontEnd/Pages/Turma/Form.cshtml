@@ -1,0 +1,102 @@
+﻿@page "{id?}"
+@model PortalDoAlunoFrontend.Pages.Turma.FormModel
+@using PortalDoAluno.Domain.Extensions
+
+@{
+    ViewData["Title"] = Model.Turma.Id == null ? "Criar Turma" : "Editar Turma";
+}
+
+<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+<div class="container d-flex justify-content-center">
+    <form method="post" asp-page-handler="Submit" class="w-50 p-4 rounded shadow-sm" style="background-color: #f9f9f9;">
+        <input type="hidden" asp-for="Turma.Id" />
+        <div class="form-group">
+            <label class="font-weight-bold">Curso:</label>
+            <select asp-for="Turma.CursoId" class="form-control form-control-sm rounded">
+                @foreach (var curso in Enum.GetValues(typeof(PortalDoAluno.Domain.Entities.Curso)).Cast<PortalDoAluno.Domain.Entities.Curso>())
+                {
+                    @if (Model.Turma.CursoId == Convert.ToInt32(curso))
+                    {
+                        <option value="@Convert.ToInt32(curso)" selected>@curso.GetDescription()</option>
+                    }
+                    else
+                    {
+                        <option value="@Convert.ToInt32(curso)">@curso.GetDescription()</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="Turma.CursoId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Turma:</label>
+            <input asp-for="Turma.Nome" class="form-control form-control-sm rounded" />
+            <span asp-validation-for="Turma.Nome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Ano:</label>
+            <input asp-for="Turma.Ano" type="number" class="form-control form-control-sm rounded" min="1900" max="2100" step="1" />
+            <span asp-validation-for="Turma.Ano" class="text-danger"></span>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-sm px-4">@ViewData["Title"]</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector("form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const id = document.querySelector('input[name="Turma.Id"]')?.value || null;
+            const nome = document.querySelector('input[name="Turma.Nome"]').value;
+            const ano = parseInt(document.querySelector('input[name="Turma.Ano"]').value, 10);
+            const cursoId = parseInt(document.querySelector('select[name="Turma.CursoId"]').value, 10);
+
+            if (!nome || nome.trim() === "") {
+                alert("O campo Nome é obrigatório.");
+                return;
+            }
+            if (ano < 1900 || ano > 2100) {
+                alert("O Ano deve estar entre 1900 e 2100.");
+                return;
+            }
+            if (isNaN(cursoId) || cursoId <= 0) {
+                alert("O CursoId deve ser um valor positivo.");
+                return;
+            }
+
+            const url = id ? `https://localhost:7166/api/turma/${id}` : 'https://localhost:7166/api/turma';
+            const method = id ? 'PUT' : 'POST';
+
+            const formData = {
+                Id: id,
+                Nome: nome,
+                Ano: ano,
+                CursoId: cursoId
+            };
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Turma/Index';
+            } else {
+                const errorData = await response.json();
+                alert("Erro ao salvar a turma: " + JSON.stringify(errorData));
+            }
+        });
+    </script>
+}
+
+

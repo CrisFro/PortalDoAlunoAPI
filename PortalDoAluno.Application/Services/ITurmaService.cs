@@ -1,13 +1,14 @@
-﻿using PortalDoAluno.Domain.Entities;
+﻿using PortalDoAluno.Application.DTOs;
+using PortalDoAluno.Domain.Entities;
 
 namespace PortalDoAluno.Application.Services
 {
     public interface ITurmaService
     {
-        Task<IEnumerable<Turma>> GetAllTurmasAsync();
+        Task<IEnumerable<TurmaDto>> GetAllTurmasAsync();
         Task<Turma> GetTurmaByIdAsync(int id);
-        Task<Turma> CreateTurmaAsync(Turma turma);
-        Task UpdateTurmaAsync(Turma turma);
+        Task<TurmaDto> CreateTurmaAsync(TurmaDto turmaDto);
+        Task UpdateTurmaAsync(TurmaDto turmaDto);
         Task DeleteTurmaAsync(int id);
     }
 }

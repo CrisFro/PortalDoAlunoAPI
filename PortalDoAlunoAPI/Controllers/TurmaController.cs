@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PortalDoAluno.Application.DTOs;
 using PortalDoAluno.Application.Services;
-using PortalDoAluno.Domain.Entities;
 
 namespace PortalDoAlunoAPI.Controllers
 {
@@ -17,14 +16,14 @@ namespace PortalDoAlunoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Turma>>> GetAllTurmas()
+        public async Task<ActionResult<IEnumerable<TurmaDto>>> GetAllTurmas()
         {
             var turmas = await _turmaService.GetAllTurmasAsync();
             return Ok(turmas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Turma>> GetTurmaById(int id)
+        public async Task<ActionResult<TurmaDto>> GetTurmaById(int id)
         {
             var turma = await _turmaService.GetTurmaByIdAsync(id);
             if (turma == null)
@@ -34,32 +33,36 @@ namespace PortalDoAlunoAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTurma([FromBody] CreateTurmaDto createTurmaDto)
+        public async Task<IActionResult> CreateTurma([FromBody] TurmaDto turmaDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); 
+                return BadRequest(ModelState);
             }
 
-            var turma = new Turma
-            {
-                CursoId = (Curso)createTurmaDto.CursoId,
-                Nome = createTurmaDto.Nome,
-                Ano = createTurmaDto.Ano,
-                IsActive = true
-            };
+            var turmaCriada = await _turmaService.CreateTurmaAsync(turmaDto);
 
-            var turmaCriada = await _turmaService.CreateTurmaAsync(turma);
             return CreatedAtAction(nameof(GetTurmaById), new { id = turmaCriada.Id }, turmaCriada);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTurma(int id, [FromBody] Turma turma)
+        public async Task<IActionResult> UpdateTurma(int id, [FromBody] TurmaDto turmaDto)
         {
-            if (id != turma.Id)
-                return BadRequest("ID da turma não corresponde.");
+            if (id != turmaDto.Id)
+                return BadRequest("O ID da turma no URL não corresponde ao ID no corpo da solicitação.");
 
-            await _turmaService.UpdateTurmaAsync(turma);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var turmaExistente = await _turmaService.GetTurmaByIdAsync(id);
+            if (turmaExistente == null)
+            {
+                return NotFound($"Turma com ID {id} não encontrada.");
+            }
+
+            await _turmaService.UpdateTurmaAsync(turmaDto);
             return NoContent();
         }
 
@@ -68,9 +71,23 @@ namespace PortalDoAlunoAPI.Controllers
         {
             var turma = await _turmaService.GetTurmaByIdAsync(id);
             if (turma == null)
-                return NotFound();
+            {
+                return NotFound($"Turma com ID {id} não encontrada.");
+            }
 
-            await _turmaService.DeleteTurmaAsync(id);
+            turma.IsActive = false;
+
+            var turmaDto = new TurmaDto
+            {
+                Id = turma.Id,
+                CursoId = turma.CursoId,
+                Nome = turma.Nome,
+                Ano = turma.Ano,
+                IsActive = turma.IsActive
+            };
+
+            await _turmaService.UpdateTurmaAsync(turmaDto);
+
             return NoContent();
         }
     }
