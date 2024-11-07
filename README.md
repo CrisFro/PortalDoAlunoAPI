@@ -7,8 +7,9 @@ Um sistema desenvolvido para gerenciar alunos e turmas de forma eficiente, facil
 - [Descrição](#descrição)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Funcionalidades](#funcionalidades)
-- [Instalação](#instalação)
 - [Scripts de Banco de Dados](#scripts-de-banco-de-dados)
+- [Inicialização dos Projetos](#inicialização-dos-projetos)
+- [Instalação](#instalação)
 
 ## Descrição
 
@@ -38,6 +39,15 @@ Os scripts para a criação e manipulação do banco de dados estão localizados
 - [PortalDoAluno.Infrastructure/DatabaseScripts](https://github.com/CrisFro/PortalDoAlunoAPI/tree/master/PortalDoAluno.Infrastructure/DatabaseScripts)
 
 Esses scripts contêm as instruções necessárias para criar as tabelas e os relacionamentos conforme o modelo do banco de dados.
+
+## Inicialização dos Projetos
+
+Para que a aplicação funcione corretamente, é necessário inicializar os seguintes projetos:
+
+1. **PortalDoAluno.Application**: Este projeto contém a lógica de negócios e as regras de manipulação de dados.
+2. **PortalDoAlunoFrontEnd**: Este é o projeto responsável pela interface do usuário, onde os alunos e turmas podem ser gerenciados.
+
+Certifique-se de que ambos os projetos estejam em execução antes de acessar a aplicação web. Você pode inicializá-los a partir do Visual Studio ou utilizando a linha de comando, dependendo de como você configurou o seu ambiente de desenvolvimento.
 
 ## Instalação
 
