@@ -58,6 +58,11 @@ namespace PortalDoAlunoFrontend.Pages.Turma
             {
                 return RedirectToPage("Index");
             }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                ModelState.AddModelError("Turma.Nome", "Já existe uma turma com este nome.");
+                return Page();
+            }
             else
             {
                 ModelState.AddModelError(string.Empty, "Erro ao salvar a turma. Tente novamente.");

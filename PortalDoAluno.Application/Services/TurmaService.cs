@@ -1,5 +1,6 @@
 ﻿using PortalDoAluno.Application.DTOs;
 using PortalDoAluno.Domain.Entities;
+using PortalDoAluno.Domain.Extensions;
 using PortalDoAluno.Domain.Interfaces;
 
 namespace PortalDoAluno.Application.Services
@@ -22,7 +23,8 @@ namespace PortalDoAluno.Application.Services
                 CursoId = t.CursoId,
                 Nome = t.Nome,
                 Ano = t.Ano,
-                IsActive = t.IsActive
+                IsActive = t.IsActive,
+                CursoNome = t.CursoId != null ? ((Curso)t.CursoId).GetDescription() : string.Empty
             }).ToList();
         }
 
@@ -33,25 +35,37 @@ namespace PortalDoAluno.Application.Services
 
         public async Task<TurmaDto> CreateTurmaAsync(TurmaDto turmaDto)
         {
-            var existeTurma = await _turmaRepository.GetTurmaByNomeAsync(turmaDto.Nome);
-            if (existeTurma != null)
+            var existingTurma = await _turmaRepository.GetTurmaByNomeECursoAsync(turmaDto.Nome, turmaDto.CursoId);
+
+            if (existingTurma != null)
             {
-                throw new InvalidOperationException("Já existe uma turma com este nome.");
+                if (!existingTurma.IsActive)
+                {
+                    existingTurma.IsActive = true;
+                    existingTurma.Ano = turmaDto.Ano; 
+                    await _turmaRepository.UpdateTurmaAsync(existingTurma); 
+                    turmaDto.Id = existingTurma.Id; 
+                    return turmaDto;
+                }
+
+                throw new InvalidOperationException("Já existe uma turma ativa com este nome e curso.");
             }
 
-            var turma = new Turma
+            var newTurma = new Turma
             {
                 CursoId = turmaDto.CursoId,
                 Nome = turmaDto.Nome,
                 Ano = turmaDto.Ano,
-                IsActive = turmaDto.IsActive
+                IsActive = true
             };
 
-            turma.Id = await _turmaRepository.CreateTurmaAsync(turma);
-            turmaDto.Id = turma.Id;
+            newTurma.Id = await _turmaRepository.CreateTurmaAsync(newTurma);
+            turmaDto.Id = newTurma.Id;
 
             return turmaDto;
         }
+
+
 
         public async Task UpdateTurmaAsync(TurmaDto turmaDto)
         {
@@ -69,7 +83,15 @@ namespace PortalDoAluno.Application.Services
 
         public async Task DeleteTurmaAsync(int id)
         {
-            await _turmaRepository.DeleteTurmaAsync(id);
+            var turma = await _turmaRepository.GetTurmaByIdAsync(id);
+            if (turma == null)
+            {
+                throw new InvalidOperationException("Turma não encontrada.");
+            }
+
+            turma.IsActive = false;
+            await _turmaRepository.UpdateTurmaAsync(turma);
         }
     }
 }
+

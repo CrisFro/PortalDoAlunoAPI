@@ -61,7 +61,10 @@ namespace PortalDoAlunoFrontend.Pages.Aluno
             }
             else
             {
-                ModelState.AddModelError("", "Erro ao salvar o aluno. Tente novamente.");
+                var errorMessage = await response.Content.ReadAsStringAsync();
+
+                
+                ModelState.AddModelError("", string.IsNullOrWhiteSpace(errorMessage) ? "Erro ao salvar o aluno. Tente novamente." : errorMessage);
                 return Page();
             }
         }

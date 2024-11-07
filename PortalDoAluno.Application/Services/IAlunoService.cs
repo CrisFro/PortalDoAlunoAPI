@@ -9,6 +9,5 @@ namespace PortalDoAluno.Application.Services
         Task<Aluno> CreateAsync(Aluno aluno);
         Task UpdateAlunoAsync(Aluno aluno);
         Task DeleteAlunoAsync(int id);
-        Task RelacionarAlunoNaTurmaAsync(int alunoId, int turmaId);
     }
 }

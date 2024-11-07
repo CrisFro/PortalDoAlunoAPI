@@ -66,14 +66,7 @@ namespace PortalDoAluno.Infrastructure.Repositories
             using var connection = new SqlConnection(_connectionString);
             var sql = "SELECT * FROM AlunoTurma WHERE AlunoId = @AlunoId AND TurmaId = @TurmaId";
             return await connection.QueryFirstOrDefaultAsync<AlunoTurma>(sql, new { AlunoId = alunoId, TurmaId = turmaId });
-        }
-
-        public async Task RelacionarAlunoNaTurmaAsync(int alunoId, int turmaId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            var sql = "INSERT INTO AlunoTurma (AlunoId, TurmaId) VALUES (@AlunoId, @TurmaId)";
-            await connection.ExecuteAsync(sql, new { AlunoId = alunoId, TurmaId = turmaId });
-        }
+        }       
 
         public async Task<Aluno> GetByUsuarioAsync(string usuario)
         {

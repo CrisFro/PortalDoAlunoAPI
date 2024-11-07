@@ -34,19 +34,23 @@ namespace PortalDoAlunoAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AlunoDto>> GetAlunoById(int id)
         {
-            var aluno = await _alunoService.GetAlunoByIdAsync(id);
-            if (aluno == null)
-                return NotFound();
-
-            var alunoDto = new AlunoDto
+            try
             {
-                Id = aluno.Id,
-                Nome = aluno.Nome,
-                Usuario = aluno.Usuario,
-                IsActive = aluno.IsActive
-            };
+                var aluno = await _alunoService.GetAlunoByIdAsync(id);
+                var alunoDto = new AlunoDto
+                {
+                    Id = aluno.Id,
+                    Nome = aluno.Nome,
+                    Usuario = aluno.Usuario,
+                    IsActive = aluno.IsActive
+                };
 
-            return Ok(alunoDto);
+                return Ok(alunoDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -65,17 +69,25 @@ namespace PortalDoAlunoAPI.Controllers
                 IsActive = alunoDto.IsActive
             };
 
-            var alunoCriado = await _alunoService.CreateAsync(aluno);
-            alunoDto.Id = alunoCriado.Id;
-
-            return CreatedAtAction(nameof(GetAlunoById), new { id = alunoCriado.Id }, alunoDto);
+            try
+            {
+                var alunoCriado = await _alunoService.CreateAsync(aluno);
+                alunoDto.Id = alunoCriado.Id;
+                return CreatedAtAction(nameof(GetAlunoById), new { id = alunoCriado.Id }, alunoDto);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAluno(int id, [FromBody] AlunoDto alunoDto)
         {
             if (id != alunoDto.Id)
+            {
                 return BadRequest("ID do aluno não corresponde.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -102,32 +114,17 @@ namespace PortalDoAlunoAPI.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAluno(int id)
         {
-            var aluno = await _alunoService.GetAlunoByIdAsync(id);
-            if (aluno == null)
-            {
-                return NotFound($"Aluno com ID {id} não encontrado.");
-            }
-
-            await _alunoService.DeleteAlunoAsync(id); 
-            return NoContent();
-        }
-
-
-        [HttpPost("relacionar")]
-        public async Task<IActionResult> RelacionarAlunoNaTurma(int alunoId, int turmaId)
-        {
             try
             {
-                await _alunoService.RelacionarAlunoNaTurmaAsync(alunoId, turmaId);
-                return Ok("Aluno relacionado à turma com sucesso.");
+                await _alunoService.DeleteAlunoAsync(id);
+                return NoContent();
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

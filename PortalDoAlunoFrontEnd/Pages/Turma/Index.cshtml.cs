@@ -35,6 +35,7 @@ namespace PortalDoAlunoFrontend.Pages.Turma
 
             if (response.IsSuccessStatusCode)
             {
+                TempData["MensagemSucesso"] = "Turma desativada com sucesso.";
                 return RedirectToPage();
             }
             else

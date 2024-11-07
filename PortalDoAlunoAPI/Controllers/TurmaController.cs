@@ -27,7 +27,7 @@ namespace PortalDoAlunoAPI.Controllers
         {
             var turma = await _turmaService.GetTurmaByIdAsync(id);
             if (turma == null)
-                return NotFound();
+                return NotFound("Turma não encontrada.");
 
             return Ok(turma);
         }
@@ -40,55 +40,53 @@ namespace PortalDoAlunoAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var turmaCriada = await _turmaService.CreateTurmaAsync(turmaDto);
-
-            return CreatedAtAction(nameof(GetTurmaById), new { id = turmaCriada.Id }, turmaCriada);
+            try
+            {
+                var createdTurma = await _turmaService.CreateTurmaAsync(turmaDto);
+                return CreatedAtAction(nameof(GetTurmaById), new { id = createdTurma.Id }, createdTurma);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTurma(int id, [FromBody] TurmaDto turmaDto)
         {
             if (id != turmaDto.Id)
+            {
                 return BadRequest("O ID da turma no URL não corresponde ao ID no corpo da solicitação.");
+            }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var turmaExistente = await _turmaService.GetTurmaByIdAsync(id);
-            if (turmaExistente == null)
+            try
             {
-                return NotFound($"Turma com ID {id} não encontrada.");
+                await _turmaService.UpdateTurmaAsync(turmaDto);
+                return NoContent();
             }
-
-            await _turmaService.UpdateTurmaAsync(turmaDto);
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTurma(int id)
         {
-            var turma = await _turmaService.GetTurmaByIdAsync(id);
-            if (turma == null)
+            try
             {
-                return NotFound($"Turma com ID {id} não encontrada.");
+                await _turmaService.DeleteTurmaAsync(id);
+                return NoContent();
             }
-
-            turma.IsActive = false;
-
-            var turmaDto = new TurmaDto
+            catch (InvalidOperationException ex)
             {
-                Id = turma.Id,
-                CursoId = turma.CursoId,
-                Nome = turma.Nome,
-                Ano = turma.Ano,
-                IsActive = turma.IsActive
-            };
-
-            await _turmaService.UpdateTurmaAsync(turmaDto);
-
-            return NoContent();
+                return NotFound(ex.Message);
+            }
         }
     }
 }
