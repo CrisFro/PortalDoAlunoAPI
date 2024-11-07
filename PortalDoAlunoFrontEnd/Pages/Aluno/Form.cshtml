@@ -1,0 +1,108 @@
+﻿@page "{id?}"
+@model PortalDoAlunoFrontend.Pages.Aluno.FormModel
+@{
+    ViewData["Title"] = Model.Aluno.Id == null ? "Criar Aluno" : "Editar Aluno";
+}
+
+@if (ViewBag.MensagemSucesso != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.MensagemSucesso
+    </div>
+}
+
+<h1 class="mb-4 text-center">@ViewData["Title"]</h1>
+
+<div class="container d-flex justify-content-center">
+    <form method="post" asp-page-handler="Submit" class="w-50 p-4 rounded shadow-sm" style="background-color: #f9f9f9;">
+        <input type="hidden" asp-for="Aluno.Id" />
+        <div class="form-group">
+            <label class="font-weight-bold">Nome:</label>
+            <input asp-for="Aluno.Nome" class="form-control form-control-sm rounded" id="nomeInput" required />
+            <span asp-validation-for="Aluno.Nome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Usuário:</label>
+            <input asp-for="Aluno.Usuario" class="form-control form-control-sm rounded" id="usuarioInput" required />
+            <span asp-validation-for="Aluno.Usuario" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label class="font-weight-bold">Senha:</label>
+            <input asp-for="Aluno.Senha" type="password" class="form-control form-control-sm rounded" id="senhaInput" required />
+            <span asp-validation-for="Aluno.Senha" class="text-danger" id="senhaError"></span>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-sm px-4" id="submitButton" disabled>@ViewData["Title"]</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[asp-page-handler="Submit"]');
+        const nomeInput = document.querySelector('#nomeInput');
+        const usuarioInput = document.querySelector('#usuarioInput');
+        const senhaInput = document.querySelector('#senhaInput');
+        const senhaErrorSpan = document.querySelector('#senhaError');
+        const submitButton = document.querySelector('#submitButton');
+
+        function validarFormulario() {
+            const nomeValido = nomeInput.value.trim() !== '';
+            const usuarioValido = usuarioInput.value.trim() !== '';
+            const senhaValida = validarSenha();
+
+            submitButton.disabled = !(nomeValido && usuarioValido && senhaValida);
+        }
+
+        function validarSenha() {
+            const senha = senhaInput.value;
+            let errorMessage = '';
+            let successMessage = 'A senha atende aos requisitos.';
+
+            if (senha.length < 8 || senha.length > 16) {
+                errorMessage = 'A senha deve ter entre 8 e 16 caracteres.';
+            } else if (!/[A-Z]/.test(senha)) {
+                errorMessage = 'A senha deve conter pelo menos uma letra maiúscula.';
+            } else if (!/[a-z]/.test(senha)) {
+                errorMessage = 'A senha deve conter pelo menos uma letra minúscula.';
+            } else if (!/[0-9]/.test(senha)) {
+                errorMessage = 'A senha deve conter pelo menos um número.';
+            } else if (!/[\W_]/.test(senha)) {
+                errorMessage = 'A senha deve conter pelo menos um caractere especial.';
+            }
+
+            if (errorMessage !== '') {
+                senhaErrorSpan.textContent = errorMessage;
+                senhaErrorSpan.style.color = 'red';
+                senhaInput.style.borderColor = 'red';
+                senhaErrorSpan.classList.remove('text-success');
+                senhaErrorSpan.classList.add('text-danger');
+                return false;
+            } else {
+                senhaErrorSpan.textContent = successMessage;
+                senhaErrorSpan.style.color = 'green';
+                senhaInput.style.borderColor = 'green';
+                senhaErrorSpan.classList.remove('text-danger');
+                senhaErrorSpan.classList.add('text-success');
+                return true;
+            }
+        }
+
+        nomeInput.addEventListener('input', validarFormulario);
+        usuarioInput.addEventListener('input', validarFormulario);
+        senhaInput.addEventListener('input', validarFormulario);
+
+        form.addEventListener('submit', function (event) {
+            if (!validarSenha()) {
+                event.preventDefault();
+            }
+        });
+
+        validarFormulario();
+    });
+</script>

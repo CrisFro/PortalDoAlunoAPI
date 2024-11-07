@@ -1,4 +1,5 @@
 ﻿using Moq;
+using PortalDoAluno.Application.DTOs;
 using PortalDoAluno.Application.Services;
 using PortalDoAluno.Domain.Entities;
 using PortalDoAluno.Domain.Interfaces;
@@ -26,7 +27,7 @@ namespace PortalDoAluno.Tests
                 new Turma
                 {
                     Id = 1,
-                    CursoId = (Curso)1,                    
+                    CursoId = 1,
                     Nome = "Turma de Ciência da Computação",
                     Ano = 2023,
                     IsActive = true
@@ -49,7 +50,7 @@ namespace PortalDoAluno.Tests
             var turma = new Turma
             {
                 Id = 1,
-                CursoId = (Curso)1,
+                CursoId = 1,
                 Nome = "Turma de Ciência da Computação",
                 Ano = 2023,
                 IsActive = true
@@ -67,16 +68,26 @@ namespace PortalDoAluno.Tests
         public async Task CreateTurmaAsync_ShouldReturnTurmaWithId()
         {
             // Teste para verificar se cria a turma com ID atribuído
-            var turma = new Turma
+            var turmaDto = new TurmaDto
             {
-                CursoId = (Curso)1,
+                CursoId = 1,
                 Nome = "Turma de Ciência da Computação",
                 Ano = 2023,
                 IsActive = true
             };
-            _turmaRepositoryMock.Setup(repo => repo.CreateTurmaAsync(turma)).ReturnsAsync(1);
 
-            var result = await _turmaService.CreateTurmaAsync(turma);
+            var turma = new Turma
+            {
+                Id = 1,
+                CursoId = 1,
+                Nome = "Turma de Ciência da Computação",
+                Ano = 2023,
+                IsActive = true
+            };
+
+            _turmaRepositoryMock.Setup(repo => repo.CreateTurmaAsync(It.IsAny<Turma>())).ReturnsAsync(1);
+
+            var result = await _turmaService.CreateTurmaAsync(turmaDto);
 
             Assert.NotNull(result);
             Assert.Equal(1, result.Id);
@@ -86,25 +97,25 @@ namespace PortalDoAluno.Tests
         [Fact]
         public async Task UpdateTurmaAsync_ShouldInvokeRepositoryMethod()
         {
-            // Teste para verificar se o método de atualização é invocado
-            var turma = new Turma
+            // Teste para verificar se o método de atualização é chamado
+            var turmaDto = new TurmaDto
             {
                 Id = 1,
-                CursoId = (Curso)1,
+                CursoId = 1,
                 Nome = "Turma Atualizada",
                 Ano = 2024,
                 IsActive = true
             };
 
-            await _turmaService.UpdateTurmaAsync(turma);
+            await _turmaService.UpdateTurmaAsync(turmaDto);
 
-            _turmaRepositoryMock.Verify(repo => repo.UpdateTurmaAsync(turma), Times.Once);
+            _turmaRepositoryMock.Verify(repo => repo.UpdateTurmaAsync(It.IsAny<Turma>()), Times.Once);
         }
 
         [Fact]
         public async Task DeleteTurmaAsync_ShouldInvokeRepositoryMethod()
         {
-            // Teste para verificar se o método de exclusão é invocado
+            // Teste para verificar se o método de exclusão é chamado
             var turmaId = 1;
 
             await _turmaService.DeleteTurmaAsync(turmaId);

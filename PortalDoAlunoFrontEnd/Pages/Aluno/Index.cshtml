@@ -1,0 +1,62 @@
+﻿@page
+@model PortalDoAlunoFrontend.Pages.Aluno.IndexModel
+@{
+    ViewData["Title"] = "Lista de Alunos";
+}
+
+@if (TempData["MensagemSucesso"] != null)
+{
+    <div id="mensagemSucesso" class="alert alert-success">
+        @TempData["MensagemSucesso"]
+    </div>
+
+    <script>
+        setTimeout(function () {
+            var mensagem = document.getElementById('mensagemSucesso');
+            if (mensagem) {
+                mensagem.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+}
+
+<h2>Lista de Alunos</h2>
+<a asp-page="Form" class="btn btn-success">Novo Aluno</a>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Nome do Aluno</th>
+            <th>Usuário</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Alunos != null && Model.Alunos.Count > 0)
+        {
+            foreach (var aluno in Model.Alunos)
+            {
+                <tr>
+                    <td>@aluno.Nome</td>
+                    <td>@aluno.Usuario</td>
+                    <td>
+                        <a asp-page="Form" asp-route-id="@aluno.Id" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="post" asp-page-handler="Inactivate" asp-route-id="@aluno.Id" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger" title="Desativar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="text-center">Nenhum aluno encontrado.</td>
+            </tr>
+        }
+    </tbody>
+</table>

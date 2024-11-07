@@ -1,0 +1,37 @@
+﻿@page
+@model PortalDoAlunoFrontend.Pages.Turma.IndexModel
+@{
+    ViewData["Title"] = "Lista de Turmas";
+}
+
+<h2>Lista de Turmas</h2>
+<a asp-page="Form" class="btn btn-sm btn-success">Nova Turma</a>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Ano</th>
+            <th class="text-center">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var turma in Model.Turmas)
+        {
+            <tr>
+                <td>@turma.Nome</td>
+                <td>@turma.Ano</td>
+                <td class="text-center">
+                    <a asp-page="Form" asp-route-id="@turma.Id" class="btn btn-sm btn-warning" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@turma.Id" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger" title="Desativar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

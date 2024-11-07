@@ -49,7 +49,36 @@ namespace PortalDoAluno.Infrastructure.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             var sql = "UPDATE aluno SET IsActive = 0 WHERE Id = @Id";
-            await connection.ExecuteAsync(sql, new { Id = id });
+            var rowsAffected = await connection.ExecuteAsync(sql, new { Id = id });
+
+            if (rowsAffected > 0)
+            {
+                Console.WriteLine($"Aluno com ID {id} foi desativado com sucesso.");
+            }
+            else
+            {
+                Console.WriteLine($"Nenhum aluno com ID {id} foi encontrado para desativar.");
+            }
+        }
+
+        public async Task<AlunoTurma> GetRelacionamentoAsync(int alunoId, int turmaId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var sql = "SELECT * FROM AlunoTurma WHERE AlunoId = @AlunoId AND TurmaId = @TurmaId";
+            return await connection.QueryFirstOrDefaultAsync<AlunoTurma>(sql, new { AlunoId = alunoId, TurmaId = turmaId });
+        }
+
+        public async Task RelacionarAlunoNaTurmaAsync(int alunoId, int turmaId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var sql = "INSERT INTO AlunoTurma (AlunoId, TurmaId) VALUES (@AlunoId, @TurmaId)";
+            await connection.ExecuteAsync(sql, new { AlunoId = alunoId, TurmaId = turmaId });
+        }
+
+        public async Task<Aluno> GetByUsuarioAsync(string usuario)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            return await connection.QueryFirstOrDefaultAsync<Aluno>("SELECT * FROM aluno WHERE Usuario = @Usuario", new { Usuario = usuario });
         }
     }
 }
